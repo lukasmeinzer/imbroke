@@ -1,4 +1,4 @@
-import undetected_chromedriver as uc
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 import requests
@@ -7,12 +7,13 @@ from collections import defaultdict
 import pandas as pd
 from tqdm import tqdm
 import Database
+import Utils
 
 
 def AllKaufland(url: str):
     KauflandConnection = Database.KauflandDB()
 
-    soup = lade_seite(url, include=['soup'])[0]
+    soup = Utils.lade_seite(url, include=['soup'])[0]
     # keks_klicker(driver)
 
     meta_info = MetaInfo(soup)
@@ -26,25 +27,6 @@ def AllKaufland(url: str):
     Database.Hochladen(data=angebote, con=KauflandConnection, name='angebote')
 
 
-def lade_seite(url: str, include: list=['driver', 'soup']) -> list:
-    '''TODO driver laden klappt aktuell nicht ...
-    '''
-    url = url + '.html'
-    return_elements = []
-    
-    if 'driver' in include:
-        driver = uc.Chrome()
-        driver.get(url)
-        return_elements.append(driver)
-    
-    if 'soup' in include:
-        response = requests.get(url)
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'html.parser')
-            return_elements.append(soup)
-        
-    assert (len(return_elements) != 0), 'Es gab einen Fehler beim Laden der Seite.'
-    return return_elements
 
 
 def keks_klicker(driver):

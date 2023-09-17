@@ -7,6 +7,14 @@ def KauflandDB():
 
     return con
 
+
+def EdekaDB():
+    engine = sqlalchemy.create_engine(f"mysql://root:@localhost/kaufland")
+    con = engine.connect()
+
+    return con
+
+
 def Hochladen(data, con, name: str):
     if isinstance(data, dict):
         df = pd.DataFrame(data)
