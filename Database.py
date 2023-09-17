@@ -15,6 +15,13 @@ def EdekaDB():
     return con
 
 
+def AldiSuedDB():
+    engine = sqlalchemy.create_engine(f"mysql://root:@localhost/aldi_sued")
+    con = engine.connect()
+
+    return con
+
+
 def Hochladen(data, con, name: str):
     if isinstance(data, dict):
         df = pd.DataFrame(data)
