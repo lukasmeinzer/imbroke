@@ -14,19 +14,5 @@ TODO fürs nächste Mal:
 import Maerkte.Kaufland as Kaufland
 import Database
 
-url = 'https://filiale.kaufland.de/angebote/aktuelle-woche'
 
-KauflandConnection = Database.KauflandDB()
-
-soup = Kaufland.lade_seite(url, include=['soup'])[0]
-# Kaufland.keks_klicker(driver)
-
-meta_info = Kaufland.MetaInfo(soup)
-Database.Hochladen(data=meta_info, con=KauflandConnection, name='metainfo')
-
-kategorien = Kaufland.Kategorien(soup)
-kategorien_urls = Kaufland.Kategorien_URLs(kategorien, url)
-
-angebote_je_kategorie_urls = Kaufland.Produkt_URLs(kategorien_urls)
-angebote = Kaufland.Crawler(angebote_je_kategorie_urls)
-Database.Hochladen(data=angebote, con=KauflandConnection, name='angebote')
+Kaufland.AllKaufland(url='https://filiale.kaufland.de/angebote/aktuelle-woche')

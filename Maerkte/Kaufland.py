@@ -6,6 +6,24 @@ from bs4 import BeautifulSoup
 from collections import defaultdict
 import pandas as pd
 from tqdm import tqdm
+import Database
+
+
+def AllKaufland(url: str):
+    KauflandConnection = Database.KauflandDB()
+
+    soup = lade_seite(url, include=['soup'])[0]
+    # keks_klicker(driver)
+
+    meta_info = MetaInfo(soup)
+    Database.Hochladen(data=meta_info, con=KauflandConnection, name='metainfo')
+
+    kategorien = Kategorien(soup)
+    kategorien_urls = Kategorien_URLs(kategorien, url)
+
+    angebote_je_kategorie_urls = Produkt_URLs(kategorien_urls)
+    angebote = Crawler(angebote_je_kategorie_urls)
+    Database.Hochladen(data=angebote, con=KauflandConnection, name='angebote')
 
 
 def lade_seite(url: str, include: list=['driver', 'soup']) -> list:
