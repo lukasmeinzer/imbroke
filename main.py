@@ -1,9 +1,9 @@
 """
 TODO fürs nächste Mal:
-- DataBase in eigenen DB Ordner packen und dann jeweils eine DB File für Connection
-- Für Apis evtl je Markt eine eigene DB File
-- Dann alles für Edeka nach dem exakt gleichem Schema machen
 - DB_Konfiguration.toml ebenso erstellen
+- Edeka erstmal postponed, klappt mit bs4 nicht, und selenium braucht einen neuen 
+Driver
+- 
 """
 
 import toml

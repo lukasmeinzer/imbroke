@@ -14,7 +14,6 @@ def AllKaufland(url: str):
     KauflandConnection = Database.KauflandDB()
 
     soup = Utils.lade_seite(url, include=['soup'])[0]
-    # keks_klicker(driver)
 
     meta_info = MetaInfo(soup)
     Database.Hochladen(data=meta_info, con=KauflandConnection, name='metainfo')
@@ -25,8 +24,6 @@ def AllKaufland(url: str):
     angebote_je_kategorie_urls = Produkt_URLs(kategorien_urls)
     angebote = Crawler(angebote_je_kategorie_urls)
     Database.Hochladen(data=angebote, con=KauflandConnection, name='angebote')
-
-
 
 
 def keks_klicker(driver):

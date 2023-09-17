@@ -1,5 +1,5 @@
 [Kaufland]
-url = 'https://filiale.kaufland.de/angebote/aktuelle-woche'
+url = 'https://filiale.kaufland.de/angebote/aktuelle-woche.html'
 
 [Edeka]
 url = 'https://www.edeka.de/eh/s%C3%BCdbayern/edeka-spitt-erdinger-stra%C3%9Fe-26-28/angebote.jsp'

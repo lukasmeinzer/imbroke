@@ -3,9 +3,8 @@ import requests
 from bs4 import BeautifulSoup
 
 def lade_seite(url: str, include: list=['driver', 'soup']) -> list:
-    '''TODO driver laden klappt aktuell nicht ...
+    '''TODO driver laden klappt aktuell nicht ... liegt an meiner Chrome-Driver Version
     '''
-    url = url + '.html'
     return_elements = []
     
     if 'driver' in include:
@@ -16,7 +15,7 @@ def lade_seite(url: str, include: list=['driver', 'soup']) -> list:
     if 'soup' in include:
         response = requests.get(url)
         if response.status_code == 200:
-            soup = BeautifulSoup(response.text, 'html.parser')
+            soup = BeautifulSoup(response.text, 'html5lib')
             return_elements.append(soup)
         
     assert (len(return_elements) != 0), 'Es gab einen Fehler beim Laden der Seite.'
