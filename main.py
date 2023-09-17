@@ -8,7 +8,7 @@ TODO fürs nächste Mal:
 """
 
 
-import Kaufland
+import Maerkte.Kaufland as Kaufland
 import Database
 
 
