@@ -4,6 +4,8 @@ from selenium.webdriver.common.action_chains import ActionChains
 import requests
 from bs4 import BeautifulSoup
 from collections import defaultdict
+import pandas as pd
+from tqdm import tqdm
 
 
 def lade_seite(url: str, include: list=['driver', 'soup']) -> list:
@@ -105,10 +107,16 @@ def Crawler(angebote_je_kategorie_urls: dict):
     angebote_dict = defaultdict(list)
     
     for kat, angebot_urls in angebote_je_kategorie_urls.items():
-        for url in angebot_urls:
+        for url in tqdm(angebot_urls):
             url = url_prefix + url
             angebote_dict['Kategorie'].append(kat)
             CrawlURL(url, angebote_dict)
+    try:
+        angebote_df = pd.DataFrame(angebote_dict)
+    except Exception:
+        print('Fehler beim Crawling Inhalt...')
+    
+    return angebote_df
         
         
 def CrawlURL(url: str, angebote_dict: defaultdict):
@@ -153,7 +161,7 @@ def CrawlURL(url: str, angebote_dict: defaultdict):
     angebote_dict['Währung'].append(preis_waehrung)
     angebote_dict['Hinweis'].append(angebots_hinweis)
     
-    #return angebote_dict
+    return angebote_dict
     
     
 def find_element(soup, tag, class_name):
