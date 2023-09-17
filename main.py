@@ -11,13 +11,12 @@ TODO fürs nächste Mal:
 import Maerkte.Kaufland as Kaufland
 import Database
 
-
 url = 'https://filiale.kaufland.de/angebote/aktuelle-woche'
 
 KauflandConnection = Database.KauflandDB()
 
-soup, driver = Kaufland.lade_seite(url)
-Kaufland.keks_klicker(driver)
+soup = Kaufland.lade_seite(url, include=['soup'])[0]
+# Kaufland.keks_klicker(driver)
 
 meta_info = Kaufland.MetaInfo(soup)
 Database.Hochladen(data=meta_info, con=KauflandConnection, name='MetaInfo')

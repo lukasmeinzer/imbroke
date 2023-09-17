@@ -6,18 +6,25 @@ from bs4 import BeautifulSoup
 from collections import defaultdict
 
 
-def lade_seite(url):
+def lade_seite(url: str, include: list=['driver', 'soup']) -> list:
+    '''TODO driver laden klappt aktuell nicht ...
+    '''
     url = url + '.html'
-    driver = uc.Chrome()
-    driver.get(url)
+    return_elements = []
     
-    response = requests.get(url)
-    if response.status_code == 200:
-        soup = BeautifulSoup(response.text, 'html.parser')
-    else:
-        soup = None
+    if 'driver' in include:
+        driver = uc.Chrome()
+        driver.get(url)
+        return_elements.append(driver)
+    
+    if 'soup' in include:
+        response = requests.get(url)
+        if response.status_code == 200:
+            soup = BeautifulSoup(response.text, 'html.parser')
+            return_elements.append(soup)
         
-    return soup, driver
+    assert (len(return_elements) != 0), 'Es gab einen Fehler beim Laden der Seite.'
+    return return_elements
 
 
 def keks_klicker(driver):
@@ -112,21 +119,6 @@ def CrawlURL(url: str, angebote_dict: defaultdict):
     
     #TODO: Wenn Angebot nicht mehr verfügbar
     # Beispiel: '/angebote/aktuelle-woche/uebersicht/detail.so_id=00014234.html'
-    
-    # image_source = angebot_soup.find('img', 'a-image-responsive a-image-responsive--preview-knockout').get('src')
-    # gueltigkeit = angebot_soup.find('span', 'a-eye-catcher__text').text.strip()
-    # hersteller = angebot_soup.find('h2', 't-offer-detail__subtitle').text.strip()
-    # name = angebot_soup.find('h1', 't-offer-detail__title').text.strip()
-    # beschreibung = angebot_soup.find('div', 't-offer-detail__description').text.strip()
-    # mengen_einheit = angebot_soup.find('div', 't-offer-detail__quantity').text.strip()
-    # angebots_detail = angebot_soup.find('div', 't-offer-detail__mpa').text.strip()
-    # angebots_detail_basis_preis = angebot_soup.find('div', 't-offer-detail__basic-price').text.strip()
-    # angebots_detail_minimum = angebot_soup.find('div', 't-offer-detail__minimum').text.strip()
-    # preis_discount = angebot_soup.find('div', 'a-pricetag__discount').text.strip()
-    # preis_alt = angebot_soup.find('span', 'a-pricetag__old-price a-pricetag__line-through').text.strip()
-    # preis_waehrung = angebot_soup.find('span', 'a-pricetag__currency').text.strip()
-    # preis_neu = angebot_soup.find('div', 'a-pricetag__price').text.strip()
-    # angebots_hinweis = angebot_soup.find('div', 't-offer-detail__notification').text.strip()
     
     image_source = find_element(angebot_soup, 'img', 'a-image-responsive a-image-responsive--preview-knockout')
     if image_source != '':
