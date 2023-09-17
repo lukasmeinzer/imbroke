@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 import requests
 from bs4 import BeautifulSoup
+from collections import defaultdict
 
 
 def lade_seite(url):
@@ -64,18 +65,107 @@ def Kategorien_URLs(kategorien: list, url: str, exclude=['Drogerie, Tiernahrung'
             kat_nummer = '01a'
             kategorie = 'Frischer_Fisch'
         kategorie_url = url + '/uebersicht.category=' + str(kat_nummer).zfill(2) + '_' + kategorie.replace(', ', '__') + '.html'
-        kategorien_urls.append(kategorie_url)
+        kategorien_urls.append((kategorie, kategorie_url))
     
     return kategorien_urls
 
 
-def Angebote(kategorien_urls: list):
-    for url in kategorien_urls:
-        response = requests.get(url)
+def Produkt_URLs(kategorien_urls: list):
+    
+    angebote_je_kategorie = {}
+    
+    for kat, kat_url in kategorien_urls:
+        
+        produkt_urls = []
+        
+        response = requests.get(kat_url)
         
         assert response.status_code == 200, 'Fehler beim Verbinden mit einer Kategorien-URL'
         
         kat_soup = BeautifulSoup(response.text, 'html.parser')
+        alle_angebote = kat_soup.find_all('a', 'm-offer-tile__link u-button--hover-children')
+        for angebot in alle_angebote:
+            produkt_urls.append(angebot.get('href'))
+        
+        angebote_je_kategorie[kat] = produkt_urls
+        
+    return angebote_je_kategorie
+
+
+def Crawler(angebote_je_kategorie_urls: dict):
+    url_prefix = 'https://filiale.kaufland.de'
+    
+    angebote_dict = defaultdict(list)
+    
+    for kat, angebot_urls in angebote_je_kategorie_urls.items():
+        for url in angebot_urls:
+            url = url_prefix + url
+            angebote_dict['Kategorie'].append(kat)
+            CrawlURL(url, angebote_dict)
         
         
-        
+def CrawlURL(url: str, angebote_dict: defaultdict):
+    response = requests.get(url)
+    assert response.status_code == 200, 'Fehler beim Verbinden mit einer Angebots-URL'
+    
+    angebot_soup = BeautifulSoup(response.text, 'html.parser')
+    
+    #TODO: Wenn Angebot nicht mehr verfügbar
+    # Beispiel: '/angebote/aktuelle-woche/uebersicht/detail.so_id=00014234.html'
+    
+    # image_source = angebot_soup.find('img', 'a-image-responsive a-image-responsive--preview-knockout').get('src')
+    # gueltigkeit = angebot_soup.find('span', 'a-eye-catcher__text').text.strip()
+    # hersteller = angebot_soup.find('h2', 't-offer-detail__subtitle').text.strip()
+    # name = angebot_soup.find('h1', 't-offer-detail__title').text.strip()
+    # beschreibung = angebot_soup.find('div', 't-offer-detail__description').text.strip()
+    # mengen_einheit = angebot_soup.find('div', 't-offer-detail__quantity').text.strip()
+    # angebots_detail = angebot_soup.find('div', 't-offer-detail__mpa').text.strip()
+    # angebots_detail_basis_preis = angebot_soup.find('div', 't-offer-detail__basic-price').text.strip()
+    # angebots_detail_minimum = angebot_soup.find('div', 't-offer-detail__minimum').text.strip()
+    # preis_discount = angebot_soup.find('div', 'a-pricetag__discount').text.strip()
+    # preis_alt = angebot_soup.find('span', 'a-pricetag__old-price a-pricetag__line-through').text.strip()
+    # preis_waehrung = angebot_soup.find('span', 'a-pricetag__currency').text.strip()
+    # preis_neu = angebot_soup.find('div', 'a-pricetag__price').text.strip()
+    # angebots_hinweis = angebot_soup.find('div', 't-offer-detail__notification').text.strip()
+    
+    image_source = find_element(angebot_soup, 'img', 'a-image-responsive a-image-responsive--preview-knockout')
+    if image_source != '':
+        image_source = image_source.get('src')
+    gueltigkeit = find_element(angebot_soup, 'span', 'a-eye-catcher__text')
+    hersteller = find_element(angebot_soup, 'h2', 't-offer-detail__subtitle')
+    name = find_element(angebot_soup, 'h1', 't-offer-detail__title')
+    beschreibung = find_element(angebot_soup, 'div', 't-offer-detail__description')
+    mengen_einheit = find_element(angebot_soup, 'div', 't-offer-detail__quantity')
+    angebots_detail = find_element(angebot_soup, 'div', 't-offer-detail__mpa')
+    angebots_detail_basis_preis = find_element(angebot_soup, 'div', 't-offer-detail__basic-price')
+    angebots_detail_minimum = find_element(angebot_soup, 'div', 't-offer-detail__minimum')
+    preis_discount = find_element(angebot_soup, 'div', 'a-pricetag__discount')
+    preis_alt = find_element(angebot_soup, 'span', 'a-pricetag__old-price a-pricetag__line-through')
+    preis_waehrung = find_element(angebot_soup, 'span', 'a-pricetag__currency')
+    preis_neu = find_element(angebot_soup, 'div', 'a-pricetag__price')
+    angebots_hinweis = find_element(angebot_soup, 'div', 't-offer-detail__notification')
+    
+    
+    angebote_dict['Image'].append(image_source)
+    angebote_dict['Gültigkeit'].append(gueltigkeit)
+    angebote_dict['Hersteller'].append(hersteller)
+    angebote_dict['Produkt_Name'].append(name)
+    angebote_dict['Beschreibung'].append(beschreibung)
+    angebote_dict['ME'].append(mengen_einheit)
+    angebote_dict['Detail'].append(angebots_detail)
+    angebote_dict['Basis_Preis'].append(angebots_detail_basis_preis)
+    angebote_dict['Minimum'].append(angebots_detail_minimum)
+    angebote_dict['Discount'].append(preis_discount)
+    angebote_dict['Preis_Alt'].append(preis_alt)
+    angebote_dict['Preis_Neu'].append(preis_neu)
+    angebote_dict['Währung'].append(preis_waehrung)
+    angebote_dict['Hinweis'].append(angebots_hinweis)
+    
+    #return angebote_dict
+    
+    
+def find_element(soup, tag, class_name):
+        element = soup.find(tag, class_name)
+        if element:
+            return element.text.strip()
+        return ''

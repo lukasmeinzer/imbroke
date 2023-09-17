@@ -1,6 +1,6 @@
 """
 TODO fürs nächste Mal:
-- In DB MetaInfos zu Kaufland erstmal speichern
+- angebote_dict schön in DF formatiern und in DB speichern
 - Dann Kaufland scrapen und diese Infos in DB speichern 
 - Dann alles für Edeka nach dem exakt gleichem Schema machen
 - Scraping_Input.toml erstellen und da die ganzen Variablen reinpacken
@@ -25,4 +25,5 @@ Database.Hochladen(data=meta_info, con=KauflandConnection, name='MetaInfo')
 kategorien = Kaufland.Kategorien(soup)
 kategorien_urls = Kaufland.Kategorien_URLs(kategorien, url)
 
-Kaufland.Angebote(kategorien_urls)
+angebote_je_kategorie_urls = Kaufland.Produkt_URLs(kategorien_urls)
+Kaufland.Crawler(angebote_je_kategorie_urls)
