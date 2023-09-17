@@ -7,7 +7,7 @@ def KauflandDB():
 
     return con
 
-def Hochladen(data, con, name):
+def Hochladen(data: dict, con, name: str):
     if isinstance(data, dict):
         df = pd.DataFrame(data)
         df.to_sql(name=name, con=con, if_exists='append')
