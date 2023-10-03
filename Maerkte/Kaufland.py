@@ -59,6 +59,8 @@ def Kategorien(soup):
         
         
 def Kategorien_URLs(kategorien: list, url: str, exclude=['Drogerie, Tiernahrung', 'Elektro, Büro, Medien', 'Heim, Haus', 'Bekleidung, Auto, Freizeit, Spiel']) -> list:
+    url = url.rsplit('.html', 1)[0]
+    
     fisch = False
     kategorien_urls = []
     for kat_nummer, kategorie in kategorien:
@@ -86,8 +88,10 @@ def Produkt_URLs(kategorien_urls: list):
         
         response = requests.get(kat_url)
         
-        assert response.status_code == 200, 'Fehler beim Verbinden mit einer Kategorien-URL'
-        
+        if response.status_code != 200:
+            print('Fehler beim Verbinden mit einer Kategorien-URL: >', kat_url)
+            continue
+                    
         kat_soup = BeautifulSoup(response.text, 'html.parser')
         alle_angebote = kat_soup.find_all('a', 'm-offer-tile__link u-button--hover-children')
         for angebot in alle_angebote:
@@ -104,6 +108,7 @@ def Crawler(angebote_je_kategorie_urls: dict):
     angebote_dict = defaultdict(list)
     
     for kat, angebot_urls in angebote_je_kategorie_urls.items():
+        print(f'Kategorie {str(kat)}:')
         for url in tqdm(angebot_urls):
             url = url_prefix + url
             angebote_dict['Kategorie'].append(kat)
@@ -111,7 +116,7 @@ def Crawler(angebote_je_kategorie_urls: dict):
     try:
         angebote_df = pd.DataFrame(angebote_dict)
     except Exception:
-        print('Fehler beim Crawling Inhalt...')
+        print('Gecrawlte Inhalte lassen sich zu keinem Dict konvertieren...')
     
     return angebote_df
         

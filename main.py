@@ -16,8 +16,8 @@ config = toml.load('Crawler_Input.toml')
 
 
 aldiSued_url = config['Aldi_Sued']['url']
-AldiSued.AllAldiSued(aldiSued_url)
+AldiSued.AllAldiSued(url = aldiSued_url)
 
-kaufland_url = config['Kaufland']['url']
-Kaufland.AllKaufland(kaufland_url)
+# kaufland_url = config['Kaufland']['url']
+# Kaufland.AllKaufland(url = kaufland_url)
 
