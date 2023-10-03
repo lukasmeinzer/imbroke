@@ -4,6 +4,7 @@ TODO fürs nächste Mal:
 - Edeka erstmal postponed, klappt mit bs4 nicht, und selenium braucht einen neuen 
 Driver
 - Aldi_sued deswegen als nächstes
+- CrawlURL weitermachen. Alle Infos ziehen
 """
 
 import toml
